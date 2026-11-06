@@ -1,0 +1,323 @@
+﻿<Window x:Class="ADP.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:local="clr-namespace:ADP"
+        mc:Ignorable="d"
+        Title="ADP" WindowState="Maximized" Icon="icon1.ico" SizeChanged="Window_SizeChanged">
+    <Window.Resources>
+        <SolidColorBrush x:Key="ControlColor" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+        <SolidColorBrush x:Key="ControlDarkDark" Color="{DynamicResource {x:Static SystemColors.ControlDarkDarkColorKey}}"/>
+        <SolidColorBrush x:Key="ControlLightLight" Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
+        <SolidColorBrush x:Key="ControlLight" Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+        <Style TargetType="Thumb" x:Key="CustomThumbStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <!-- A simple circle-shaped Thumb with no border -->
+                        <Rectangle Fill="#98c9f4" Width="12" Height="20" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Slider" x:Key="CustomSliderStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <!-- Track Background -->
+                            <Rectangle Fill="{StaticResource ControlLight}" Height="4" VerticalAlignment="Center" />
+
+                            <!-- Track -->
+                            <Track Name="PART_Track"
+                                 VerticalAlignment="Center"
+                               IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Minimum="{TemplateBinding Minimum}"
+                               Value="{TemplateBinding Value}"
+                               Orientation="{TemplateBinding Orientation}">
+                                <Track.Thumb>
+                                    <!-- Use the custom Thumb style -->
+                                    <Thumb Style="{StaticResource CustomThumbStyle}" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ExpanderHeaderFocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border>
+                            <Rectangle Margin="0" SnapsToDevicePixels="true" Stroke="Black" StrokeThickness="1" StrokeDashArray="1 2"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border Padding="{TemplateBinding Padding}" Background="Transparent" BorderBrush="#98c9f4" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Left" Margin="2,0,0,0" RecognizesAccessKey="True" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="MyCoolExpanderStyle" TargetType="{x:Type Expander}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Expander}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <DockPanel>
+                                <ToggleButton x:Name="HeaderSite" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}" Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="0" MinWidth="0" MinHeight="25" Padding="{TemplateBinding Padding}" Style="{StaticResource ExpanderDownHeaderStyle}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <Grid Background="White" x:Name="ExpandSite" DockPanel.Dock="Bottom" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                    <Canvas>
+                                        <Path Data="M 20,0 L 35,10 L50,0 " Stroke="#98c9f4" StrokeThickness="1" Fill="{TemplateBinding Background}" Stretch="None" Margin="0,-1,0,0"/>
+                                    </Canvas>
+                                    <ContentPresenter Focusable="false" Margin="0,10"/>
+                                </Grid>
+                            </DockPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="true">
+                                <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:ViewModel/>
+    </Window.DataContext>
+    <Grid Background="{StaticResource ControlColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="31"/>
+            <RowDefinition/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0" Background="White">
+            <MenuItem Header="Файл">
+                <MenuItem Name="Export" Header="Экспорт данных" Click="Export_Click"/>
+                <MenuItem Header="Скрин дифрактограммы" />
+                <MenuItem Header="Сохранить аппроксимацию" />
+                <Separator/>
+                <MenuItem Header="Выход" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Параметры">
+                <MenuItem Header="Длина волны">
+                    <ComboBox Name="cb" SelectedIndex="3" BorderThickness="0" Margin="1" SelectionChanged="ComboBox_SelectionChanged">
+                        <TextBlock>Cr (λ = 2.28970 Å)</TextBlock>
+                        <TextBlock>Fe (λ = 1.93604 Å)</TextBlock>
+                        <TextBlock>Co (λ = 1.78897 Å)</TextBlock>
+                        <TextBlock>Cu (λ = 1,54056 Å)</TextBlock>
+                        <TextBlock>Mo (λ = 0.70930 Å)</TextBlock>
+                    </ComboBox>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Помощь">
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="9*"/>
+                <ColumnDefinition Width="371*"/>
+            </Grid.ColumnDefinitions>
+            <Border BorderThickness="1" BorderBrush="Silver" Grid.ColumnSpan="2"/>
+        </Grid>
+        <ToolBar Grid.Row="1" VerticalAlignment="Top" Height="31" Background="{StaticResource ControlColor}" ToolBarTray.IsLocked="True" Margin="0,0,-10,0">
+            <ToggleButton Name="ToggleButton_Grid" ToolTip="Сетка" IsChecked="False" Checked="ToggleButton_Grid_Checked" Unchecked="ToggleButton_Grid_Unchecked">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="сетка.png"></Image>
+            </ToggleButton>
+            <Separator/>
+            <ToggleButton Name="Scale" ToolTip="Изменить масштаб" IsEnabled="False" Click="Scale_Click">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="ChangeScale.png"/>
+            </ToggleButton>
+            <Separator/>
+            <Button ToolTip="Исходный маштаб" Click="Button_Click">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="DefaultScale.png"/>
+            </Button>
+            <ToggleButton Name="Range" ToolTip="Выделить область анализа" IsEnabled="False" Click="Range_Click">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="ChooseRegion.png"/>
+            </ToggleButton>
+            <Separator/>
+            <Button Name="Optimization" IsEnabled="False" ToolTip="Оптимизация" Click="Optimization_Click">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Optimization.png"/>
+            </Button>
+            <Separator/>
+            <Button Name="MainBaseline" ToolTip="Базовая линия (автоматический режим)" Click="MainBaseline_Click">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="BaselineAuto.png"/>
+            </Button>
+            <ToggleButton Name="UserBaseline" ToolTip="Базовая линия (пользовательский режим)" IsEnabled="False" Checked="UserBaseline_Checked" Unchecked="UserBaseline_Unchecked">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="BaselineUser.png"/>
+            </ToggleButton>
+            <Button Name="CutBaseline" ToolTip="Вычесть фон" IsEnabled="False" Click="CutBaseline_Click">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="SubstractBaselineUser.png"/>
+            </Button>
+            <Separator/>
+            <Button ToolTip="Разложить пики">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="Deconv.png"/>
+            </Button>
+            <Button ToolTip="Количественный анализ">
+                <Image RenderOptions.BitmapScalingMode="HighQuality" Source="КолАнализ.png"/>
+            </Button>
+        </ToolBar>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="120"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="71*"/>
+                <ColumnDefinition Width="153*"/>
+                <ColumnDefinition Width="315"/>
+            </Grid.ColumnDefinitions>
+            <TabControl Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Background="{StaticResource ControlColor}" HorizontalAlignment="Right" Width="311" Margin="0,2,2.2,2">
+                <TabItem>
+                    <TabItem.Header>Список</TabItem.Header>
+                    <TabItem.Content>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="173*"/>
+                                <ColumnDefinition Width="132*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="35"/>
+                            </Grid.RowDefinitions>
+                            <ListBox Grid.Row="0" Name="ListBox" Grid.ColumnSpan="2">
+
+                            </ListBox>
+                            <Grid Grid.Row="1" VerticalAlignment="Bottom" Height="35" Grid.ColumnSpan="2">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Name="btnOpenFile" MinWidth="120" MinHeight="18" Margin="7 6 25 6" Click="btnOpenFile_Click_1">Загрузить файл</Button>
+                                    <Button Name="display" MinWidth="120" MinHeight="18" Margin="25,6,7,0" Click="display_Click" Height="23" VerticalAlignment="Top">Отобразить</Button>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+            </TabControl>
+
+            <TabControl Name="tabControl" Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Background="{StaticResource ControlColor}" HorizontalAlignment="Right" Width="311" Margin="0,2,2.2,2">
+                <TabItem>
+                    <TabItem.Header>Разложение</TabItem.Header>
+                    <TabItem.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderThickness="1" BorderBrush="Silver"/>
+                            <ScrollViewer Name="MyScrollBar" Grid.Row="0" VerticalScrollBarVisibility="Auto" Height="Auto" Width="Auto">
+                                <StackPanel Name="StackPanelForLines" Grid.Row="0" Background="White" Margin="1" Orientation="Vertical" >
+                                    
+                                </StackPanel>
+                            </ScrollViewer>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Name="R_reg" Margin="10,0,10,0" VerticalAlignment="Center">
+                                    
+                                </TextBlock>
+                                <Separator Name="SepInReg" Margin="5,3,5,3" BorderThickness="1" BorderBrush="Silver" Visibility="Hidden">
+                                    <Separator.LayoutTransform>
+                                        <RotateTransform Angle="90"/>
+                                    </Separator.LayoutTransform>
+                                </Separator>
+                                <TextBlock Name="TextBlockCommon" VerticalAlignment="Center" Visibility="Hidden">Общая:</TextBlock>
+                                <RadioButton Name="RadioButForCommon" Margin="8,0,4,0" VerticalAlignment="Center" Visibility="Hidden" IsChecked="True" Click="RadioButForCommon_Click"></RadioButton>
+                                <Button Name="ButForCommon" Width="20" Height="20" Background="Blue" ToolTip="Изменить цвет" Visibility="Hidden" Click="ButForCommon_Click"></Button>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>Параметры</TabItem.Header>
+                    <TabItem.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" BorderThickness="1" BorderBrush="Silver"/>
+                            <ScrollViewer Name="MyScrollBar2" Grid.Row="0" VerticalScrollBarVisibility="Auto" Height="Auto" Width="Auto">
+                            <StackPanel Name="StackPanelForExpander" Grid.Row="0" Background="White" Margin="0.5">
+                                
+                            </StackPanel>
+                            </ScrollViewer>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Name="R_reg_dub" Margin="10,0,10,0" VerticalAlignment="Center">
+
+                                </TextBlock>
+
+                            </StackPanel>
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+            </TabControl>
+
+
+            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="2" Background="White" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="83*"/>
+                    <ColumnDefinition Width="361*"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderThickness="2,0,0,0" BorderBrush="{StaticResource ControlDarkDark}" Grid.ColumnSpan="2"/>
+                <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource ControlDarkDark}" Grid.ColumnSpan="2"/>
+                <Border BorderThickness="1,1,1,1" BorderBrush="Silver" Grid.ColumnSpan="2"/>
+            </Grid>
+            <lvc:CartesianChart Name="MyChart" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Margin="2,4,2,0" BorderBrush="White" BorderThickness="0" Background="White"                               
+                                Series="{Binding Series1}"                                
+                                XAxes="{Binding XAxes}"
+                                YAxes="{Binding YAxes}" 
+                                Sections="{Binding Sections1}"
+                                TooltipPosition="Hidden"  
+                                EasingFunction="{x:Null}" UpdateFinished="MyChart_UpdateFinished" MouseMove="MyChart_MouseMove_1" MouseDown="MyChart_MouseDown" MouseLeftButtonDown="MyChart_MouseLeftButtonDown" MouseLeftButtonUp="MyChart_MouseLeftButtonUp" Grid.ColumnSpan="2"/>
+            <lvc:CartesianChart Name="Chart2" Grid.Row="3" Grid.Column="0" Margin="2,0,2,0" BorderBrush="White" BorderThickness="0" Background="White"
+                                Series="{Binding Series2}"
+                                XAxes="{Binding XAxes2}"
+                                YAxes="{Binding YAxes2}"
+                                TooltipPosition="Hidden"
+                                EasingFunction="{x:Null}" Grid.ColumnSpan="2">
+
+            </lvc:CartesianChart>
+        </Grid>
+
+        <Grid Grid.Row="3" VerticalAlignment="Bottom" Height="25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="315"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+                <TextBlock Name="TextBlockStatus" Margin="3,0,40,0">Готов</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal" Margin="0,4,0,0">
+                <TextBlock Name="theta" Margin="10,0,10,0"></TextBlock>
+                <TextBlock Name="interDist" Margin="10,0,20,0"></TextBlock>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>
